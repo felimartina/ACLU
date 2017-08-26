@@ -5,4 +5,4 @@ dev:
 
 ci:
 	docker-compose -p aclu up --build -d
-	curl --retry 3 --retry-connrefused --max-time 10 http://localhost:5000/aloha
+	curl --retry 3 --max-time 10 http://localhost:5000/aloha
