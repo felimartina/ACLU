@@ -1,4 +1,5 @@
-.PHONY: test
+.PHONY: ci
 
-test:
-	yarn && yarn test
+ci:
+	yarn
+	yarn test
