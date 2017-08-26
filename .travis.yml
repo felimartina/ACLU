@@ -1,3 +1,5 @@
+sudo: required
+
 jobs:
   include:
     - stage: test
@@ -5,8 +7,7 @@ jobs:
       services:
       - docker
       before_script:
-      - curl -sSL https://github.com/docker/compose/releases/download/1.11.2/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
-      - chmod +x /usr/local/bin/docker-compose
+      - sudo curl -sSLo /usr/local/bin/docker-compose https://github.com/docker/compose/releases/download/1.11.2/docker-compose-`uname -s`-`uname -m` && sudo chmod +x /usr/local/bin/docker-compose
       script: cd backend && make ci
 
     # note the node & yarn versions below need to be manually kept in sync with package.json (for now)
@@ -18,5 +19,5 @@ jobs:
           - frontend/node_modules
       install: skip
       before_script:
-      - curl -sSL https://yarnpkg.com/install.sh | bash -s -- --version 0.27.5
+      - curl -sSL https://yarnpkg.com/install.sh | sudo bash -s -- --version 0.27.5
       script: cd frontend && make ci
