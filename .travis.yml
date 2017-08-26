@@ -3,8 +3,7 @@ jobs:
     - stage: test
       language: bash
       env:
-        global:
-        - PATH="$HOME/.bin:$PATH"
+      - PATH="$HOME/.bin:$PATH"
       services:
       - docker
       before_script:
@@ -17,11 +16,10 @@ jobs:
       language: node_js
       node_js: '8.1.4'
       env:
-        global:
-        - PATH="$HOME/.yarn/bin:$PATH"
+      - PATH="$HOME/.yarn/bin:$PATH"
       cache:
         directories:
-          - frontend/node_modules
+        - frontend/node_modules
       install: skip
       before_script:
       - curl -sSL https://yarnpkg.com/install.sh | bash -s -- --version 0.27.5
