@@ -1,4 +1,4 @@
-.PHONY: ci
+.PHONY: ci chrome
 
 ci:
 	yarn

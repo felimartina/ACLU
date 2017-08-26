@@ -1,15 +1,14 @@
+sudo: required
+
 jobs:
   include:
     - stage: test
       language: bash
-      env:
-      - PATH="$HOME/.bin:$PATH"
       services:
       - docker
       before_script:
-      - mkdir ~/.bin
-      - curl -sSLo ~/.bin/docker-compose https://github.com/docker/compose/releases/download/1.11.2/docker-compose-`uname -s`-`uname -m` && chmod +x ~/.bin/docker-compose
-      script: cd backend && make ci
+      - curl -sSL /usr/local/bin/docker-compose https://github.com/docker/compose/releases/download/1.11.2/docker-compose-`uname -s`-`uname -m` | sudo dd of=/usr/local/bin/docker-compose && sudo chmod +x /usr/local/bin/docker-compose
+      script: cd backend && travis_retry make ci
 
     # note the node & yarn versions below need to be manually kept in sync with package.json (for now)
     - stage: test
@@ -23,4 +22,5 @@ jobs:
       install: skip
       before_script:
       - curl -sSL https://yarnpkg.com/install.sh | bash -s -- --version 0.27.5
+      - frontend/ci/install-chrome.sh
       script: cd frontend && make ci
