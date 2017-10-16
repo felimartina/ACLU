@@ -1,29 +1,17 @@
 version: '3'
 services:
-  ui:
-    build:
-      context: ./frontend
-      dockerfile: ./docker/Dockerfile
-    container_name: aclu-ui
-    ports:
-      - "80:80"
   api:
-    build:
-      context: ./backend
-      dockerfile: ./docker/api/Dockerfile
+    # $IMAGES_REPO_URL variable should have been setup by TF during provisioning
+    image: ${IMAGES_REPO_URL}:latest
     container_name: aclu-api
     environment:
       - MONGO_HOST=db
     ports:
       - "50050:50050"
-    volumes:
-      - ./backend/api:/src/api
     links:
       - db
   db:
-    build:
-      context: ./backend
-      dockerfile: ./docker/db/Dockerfile
+    image: mongo:3.5.11
     container_name: aclu-api
     ports:
       - "27017"

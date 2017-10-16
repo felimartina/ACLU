@@ -1,13 +1,8 @@
 #!/bin/bash
-# Set up the env variable for node again (sorry I'm not good at linux :p)
-export PATH=/usr/local/node/bin/:${PATH}
-# Build website
-cd /var/project-aclu/frontend
-yarn
-yarn build
 
 # Docker compose
 cd /var/project-aclu/
+docker-compose down
 docker-compose up
 
 # Create the spatial index
