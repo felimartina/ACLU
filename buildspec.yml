@@ -4,9 +4,6 @@ env:
   variables:
      NODE_VERSION: "8.1.4"
      YARN_VERSION: "0.27.5"
-     AWS_DEFAULT_REGION: "us-east-1"  
-     AWS_ACCOUNT_ID: "586011406659"
-     IMAGE_REPO: "hi.aclu"
 phases:
   install:
     commands:
@@ -38,14 +35,14 @@ phases:
       - yarn build --prod
       - echo Building API containers
       - cd ../backend
-      - docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO:$IMAGE_TAG .
+      - docker build -t $IMAGES_REPO_URL:$IMAGE_TAG .
   post_build:
     commands:
       - cd $CODEBUILD_SRC_DIR # move to code buil root directory, in case that previous script cd into a different directory
       - echo Updating site in s3
       - aws s3 sync ./frontend/dist s3://hi.aclu.com --acl public-read --delete --region $AWS_DEFAULT_REGION
       - echo Pushing docker API container to AWS ECR
-      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO:$IMAGE_TAG
+      - docker push $IMAGES_REPO_URL:$IMAGE_TAG
 artifacts:
   files:
     - frontend/dist/**/*
