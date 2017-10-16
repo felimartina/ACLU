@@ -25,7 +25,7 @@ phases:
     commands:
       - cd $CODEBUILD_SRC_DIR # move to code buil root directory, in case that previous script cd into a different directory
       - echo Define build version
-      - IMAGE_TAG=`date +%F@%T`
+      - IMAGE_TAG=`date +%s%3N`
       - echo Installing dependencies
       - cd frontend
       - yarn
