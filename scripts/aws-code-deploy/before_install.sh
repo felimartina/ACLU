@@ -12,4 +12,5 @@ wget -qO- https://get.docker.com/ | sudo sh
 sudo wget -O /usr/local/bin/docker-compose https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/run.sh
 sudo chmod +x /usr/local/bin/docker-compose
 # login to ECR ($ECR_REGION variable should have been setup by TF on deployment)
-$(aws ecr get-login --region $ECR_REGION)
+#$(aws ecr get-login --region $ECR_REGION) => DIDNT Find a good way of using env varibales for region...so lets harcode it for now
+$(aws ecr get-login --region us-east-1)
