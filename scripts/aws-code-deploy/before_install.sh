@@ -4,7 +4,7 @@ set -e # stop bash execution on on first error
 
 # Install dockers on every deploy...so that we can update it from code without having to re-provision
 # Install and configure docker
-DOCKER_COMPOSE_VERSION=${DOCKER_COMPOSE_VERSION}
+DOCKER_COMPOSE_VERSION=1.15.0
 # used convenience scripts since this is just test
 # https://docs.docker.com/engine/installation/linux/docker-ce/debian/#install-using-the-convenience-script
 wget -qO- https://get.docker.com/ | sudo sh
