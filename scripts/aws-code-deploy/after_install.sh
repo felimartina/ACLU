@@ -1,4 +1,6 @@
 #!/bin/bash
+set -x # echo bash commands before execution, useful for debugging
+set -e # stop bash execution on on first error
 
 # Docker compose
 cd /var/project-aclu/
