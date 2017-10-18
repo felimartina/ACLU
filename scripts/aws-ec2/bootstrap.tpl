@@ -4,6 +4,9 @@ apt-get update
 
 apt-get install ruby wget python awscli -y
 
+# Upgrade awscli to latest version (https://github.com/aws/aws-cli/issues/1926)
+pip install --upgrade awscli
+
 cd /home/ubuntu
 
 wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install

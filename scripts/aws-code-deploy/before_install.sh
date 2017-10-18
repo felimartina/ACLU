@@ -9,8 +9,9 @@ DOCKER_COMPOSE_VERSION=1.15.0
 # https://docs.docker.com/engine/installation/linux/docker-ce/debian/#install-using-the-convenience-script
 wget -qO- https://get.docker.com/ | sudo sh
 # download docker-compose
+# TODO - Add IF logic
 sudo wget -O /usr/local/bin/docker-compose https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/run.sh
 sudo chmod +x /usr/local/bin/docker-compose
 # login to ECR ($ECR_REGION variable should have been setup by TF on deployment)
 #$(aws ecr get-login --region $ECR_REGION) => DIDNT Find a good way of using env varibales for region...so lets harcode it for now
-eval $(aws ecr get-login --region us-east-1)
+eval $(aws ecr get-login --no-include-email --region us-east-1)
