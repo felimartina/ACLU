@@ -31,15 +31,16 @@ resource "aws_iam_role_policy" "codepipeline_policy" {
   "Version": "2012-10-17",
   "Statement": [
     {
-      "Sid": "ManageArtifactsInBuildBucket",
+      "Sid": "SeeBuildBucket",
+      "Effect": "Allow",
+      "Action": "s3:ListBucket",
+      "Resource": ["${aws_s3_bucket.codepipeline_build_repository.arn}"]
+    }, {
+      "Sid": "PutArtifactsInBuildBucket",
       "Effect":"Allow",
-      "Action": "s3:*",
-      "Resource": [
-        "${aws_s3_bucket.codepipeline_build_repository.arn}",
-        "${aws_s3_bucket.codepipeline_build_repository.arn}/*"
-      ]
-    },
-    {
+      "Action": "s3:PutObject",
+      "Resource": ["${aws_s3_bucket.codepipeline_build_repository.arn}/*"]
+    }, {
       "Sid": "AccessToCodeBuild",
       "Effect": "Allow",
       "Action": [
@@ -48,14 +49,66 @@ resource "aws_iam_role_policy" "codepipeline_policy" {
       ],
       "Resource": "*"
     }, {
-      "Sid": "AccessToCodeDeploy",
+      "Sid": "DefaultCodeDeploy",
+      "Effect": "Allow",
       "Action": [
-        "codedeploy:CreateDeployment",
-        "codedeploy:GetApplicationRevision",
-        "codedeploy:GetDeployment",
-        "codedeploy:GetDeploymentConfig",
-        "codedeploy:RegisterApplicationRevision"
+        "autoscaling:CompleteLifecycleAction",
+        "autoscaling:DeleteLifecycleHook",
+        "autoscaling:DescribeAutoScalingGroups",
+        "autoscaling:DescribeLifecycleHooks",
+        "autoscaling:PutLifecycleHook",
+        "autoscaling:RecordLifecycleActionHeartbeat",
+        "autoscaling:CreateAutoScalingGroup",
+        "autoscaling:UpdateAutoScalingGroup",
+        "autoscaling:EnableMetricsCollection",
+        "autoscaling:DescribeAutoScalingGroups",
+        "autoscaling:DescribePolicies",
+        "autoscaling:DescribeScheduledActions",
+        "autoscaling:DescribeNotificationConfigurations",
+        "autoscaling:DescribeLifecycleHooks",
+        "autoscaling:SuspendProcesses",
+        "autoscaling:ResumeProcesses",
+        "autoscaling:AttachLoadBalancers",
+        "autoscaling:PutScalingPolicy",
+        "autoscaling:PutScheduledUpdateGroupAction",
+        "autoscaling:PutNotificationConfiguration",
+        "autoscaling:PutLifecycleHook",
+        "autoscaling:DescribeScalingActivities",
+        "autoscaling:DeleteAutoScalingGroup",
+        "ec2:DescribeInstances",
+        "ec2:DescribeInstanceStatus",
+        "ec2:TerminateInstances",
+        "tag:GetTags",
+        "tag:GetResources",
+        "sns:Publish",
+        "cloudwatch:DescribeAlarms",
+        "cloudwatch:PutMetricAlarm",
+        "elasticloadbalancing:DescribeLoadBalancers",
+        "elasticloadbalancing:DescribeInstanceHealth",
+        "elasticloadbalancing:RegisterInstancesWithLoadBalancer",
+        "elasticloadbalancing:DeregisterInstancesFromLoadBalancer",
+        "elasticloadbalancing:DescribeTargetGroups",
+        "elasticloadbalancing:DescribeTargetHealth",
+        "elasticloadbalancing:RegisterTargets",
+        "elasticloadbalancing:DeregisterTargets"
       ],
+      "Resource": "*"
+    }, {
+      "Action": [
+        "elasticbeanstalk:*",
+        "ec2:*",
+        "elasticloadbalancing:*",
+        "autoscaling:*",
+        "cloudwatch:*",
+        "s3:*",
+        "sns:*",
+        "cloudformation:*",
+        "codedeploy:*",
+        "rds:*",  
+        "sqs:*",
+        "ecs:*",
+        "iam:PassRole"
+        ],
       "Resource": "*",
       "Effect": "Allow"
     }
@@ -102,7 +155,7 @@ resource "aws_codepipeline" "aclu" {
       owner             = "AWS"
       provider          = "CodeBuild"
       input_artifacts   = ["codebase"]
-      output_artifacts  = ["build"]
+      output_artifacts  = ["frontend"]
       version           = "1"
 
       configuration {
@@ -119,7 +172,7 @@ resource "aws_codepipeline" "aclu" {
       category        = "Deploy"
       owner           = "AWS"
       provider        = "CodeDeploy"
-      input_artifacts = ["build"]
+      input_artifacts = ["codebase"]
       version         = "1"
 
       configuration {

@@ -45,3 +45,11 @@ variable "GITHUB_BRANCH" {
 variable "GITHUB_TOKEN" {
   description = "OAuth token from github to grant CodePipeline access to your github repo. Should be in terraform.tfvars file."
 }
+
+variable "admin_cidrs" {
+  type = "list"
+
+  default = [
+    "50.113.42.119/32", # Pipe's IP
+  ]
+}

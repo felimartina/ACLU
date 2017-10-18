@@ -21,12 +21,13 @@ EOF
 resource "aws_iam_role_policy" "codedeploy_policy" {
   name = "${var.APP_NAME}-codedeploy-policy"
   role = "${aws_iam_role.codedeploy_role.id}"
-
+  # TODO  - Restrict s3 access to build bucket
   policy = <<EOF
 {
   "Version": "2012-10-17",
   "Statement": [
     {
+      "Sid": "AllowCodeDeployBasics",
       "Effect": "Allow",
       "Action": [
         "autoscaling:CompleteLifecycleAction",
@@ -43,6 +44,31 @@ resource "aws_iam_role_policy" "codedeploy_policy" {
         "sns:Publish"
       ],
       "Resource": "*"
+    }, {
+      "Sid": "ManageArtifactsInBuildBucket",
+      "Effect": "Allow",
+      "Action": "s3:*",
+      "Resource": [
+        "${aws_s3_bucket.codepipeline_build_repository.arn}",
+        "${aws_s3_bucket.codepipeline_build_repository.arn}/*"
+      ]
+    }, {
+      "Action": [
+        "elasticbeanstalk:*",
+        "ec2:*",
+        "elasticloadbalancing:*",
+        "autoscaling:*",
+        "cloudwatch:*",
+        "s3:*",
+        "sns:*",
+        "cloudformation:*",
+        "rds:*",  
+        "sqs:*",
+        "ecs:*",
+        "iam:PassRole"
+        ],
+      "Resource": "*",
+      "Effect": "Allow"
     }
   ]
 }

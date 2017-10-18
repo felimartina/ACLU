@@ -22,7 +22,7 @@ resource "aws_iam_policy" "codebuild_policy" {
   name        = "${var.APP_NAME}-codebuild-policy"
   path        = "/service-role/"
   description = "Policy used in trust relationship with CodeBuild"
-  # TODO - Restrict policy to specific ECR (receive ECR ARN from variables)
+  # TODO - Restrict policy to specific ECR (receive ECR ARN from ecr.tf)
   policy = <<POLICY
 {
   "Version": "2012-10-17",
@@ -36,6 +36,19 @@ resource "aws_iam_policy" "codebuild_policy" {
         "logs:PutLogEvents"
       ],
       "Resource" : "arn:aws:logs:*:*:*"
+    }, {
+      "Sid": "SeeBuildBucket",
+      "Effect":"Allow",
+      "Action": "s3:ListBucket",
+      "Resource": ["${aws_s3_bucket.codepipeline_build_repository.arn}"]
+    }, {
+      "Sid": "GetAndPutArtifactsInBuildBucket",
+      "Effect": "Allow",
+      "Action": [
+        "s3:PutObject",
+        "s3:GetObject"
+      ],
+      "Resource": ["${aws_s3_bucket.codepipeline_build_repository.arn}/*"]
     }, {
       "Sid": "ManageFrontEndBucket",
       "Effect": "Allow",
@@ -54,6 +67,7 @@ resource "aws_iam_policy" "codebuild_policy" {
       ]
     }, {
       "Sid": "PublishDockerImagesToECR",
+      "Effect": "Allow",
       "Action": [
         "ecr:BatchCheckLayerAvailability",
         "ecr:CompleteLayerUpload",
@@ -62,8 +76,7 @@ resource "aws_iam_policy" "codebuild_policy" {
         "ecr:PutImage",
         "ecr:UploadLayerPart"
       ],
-      "Resource": "*", 
-      "Effect": "Allow"
+      "Resource": "*"      
     }
   ]
 }

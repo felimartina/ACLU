@@ -4,6 +4,7 @@ env:
   variables:
      NODE_VERSION: "8.1.4"
      YARN_VERSION: "0.27.5"
+     AWS_DEFAULT_REGION: "us-east-1"  
 phases:
   install:
     commands:
@@ -36,7 +37,6 @@ phases:
       - echo Building API containers
       - cd ../backend
       - docker build -t $IMAGES_REPO_URL:$IMAGE_TAG .
-      - docker tag $IMAGES_REPO_URL:$IMAGE_TAG $IMAGES_REPO_URL:latest
   post_build:
     commands:
       - cd $CODEBUILD_SRC_DIR # move to code buil root directory, in case that previous script cd into a different directory
