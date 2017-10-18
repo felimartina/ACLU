@@ -12,6 +12,6 @@ services:
       - db
   db:
     image: mongo:3.5.11
-    container_name: aclu-api
+    container_name: aclu-db
     ports:
       - "27017"
