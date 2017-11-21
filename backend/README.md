@@ -11,7 +11,7 @@
 
 ```
 $ make dev
-$ curl http://localhost:5000/aloha
+$ curl http://localhost:50050/aloha
 ```
 
 # Data
@@ -36,32 +36,62 @@ docker run -v "$(pwd)":/data geodata/gdal \
 ```
 jq -r '.[] | tostring' ./data/seed/organizations.json | while read line
 do
-  echo ${line} | http --print=HhBb POST http://localhost:5000/organizations/
+  echo ${line} | http --print=HhBb POST http://localhost:50050/organizations/
   printf '\n\n'
 done;
 ```
 
 After seeding the organization data, you can retrieve them via
 
-```http get http://localhost:5000/organizations```
+```http get http://localhost:50050/organizations```
 
-## Running data importer
+## Importing data
+
+**Note / Warning:**
+
+If you aren't running in a virtualenv on your local machine, we would suggest
+you do so before you run the seed_*_data.sh scripts. There are some (dangerous) assumptions
+being made about the environment you're running - one of them being that you're
+running in a virtualenv so that running pip won't pollute your system env. If
+this isn't the case, and you've already run the script, we're sorries. With
+that said, you might want to review the seed_*_data.sh scripts in /etc to see
+exactly what assumptions are being made. If you're planning to run this in
+Virtualbox / Vagrant, then you can ignore this as polluting that environment is
+less dangerous (but should at some point still be installed into a virtualenv
+in the box) so that the environments are closer to one another.
+
+### Vagrant
+
+If you are in the Vagrant box, issue the following:
+
+ - /<path>/<to>/vagrant ssh
+ - /var/project-aclu/backend/etc/seed_fake_park_data.sh
+
+### Docker
 
  - Bring up the Dockers via make (if you need to rebuild, make sure to rebuild as the make script won't do that for you)
- - Run the command "Converting parks data to geojson" to get the 2017-07-19.parks.geojson file
- - Copy that file into the importer directory
+ - ```./etc/seed_fake_park_data.sh```
+
+The seed_fake_park_data.sh script should perform the following:
+
+ - Run the command "Converting parks data to geojson" to convert the parks data into a 2017-07-19.parks.geojson file placed into the importer directory
  - Run the command above to seed the organizations
  - ```cd importer; pip install -r requirements.txt```
  - ```python import_features.py --feature_collection_path <path_to/2017-07-19.parks.geojson> ``` to bring in the parks data
- - http get localhost:5000/features
+
+To see that the script worked:
+
+ - http get localhost:50050/features
  - PROFIT
+
+While you can run this seed file multiple times, it isn't idempotent. The state of the world under this script will be shifting, but the only thing it should be doing is adding more features to hand-crafted organization.
 
 ## Sample spatial query to return a feature
 
 This should get you data around Kapiolani Park.
 
 ```
-http get http://localhost:5000/features/?where={"geojson.geometry":{"$near":{"$geometry":{"type":"Point", "coordinates":[-157.823231, 21.269304]}, "$maxDistance": 250}}}
+http get http://localhost:50050/features/?where={"geojson.geometry":{"$near":{"$geometry":{"type":"Point", "coordinates":[-157.823231, 21.269304]}, "$maxDistance": 250}}}
 ```
 
 If you see a 500 error come through, see below to create a spatial index before you can issue a spatial query above.
@@ -85,14 +115,23 @@ aclu-api |  planner returned error: unable to find index for $geoNear query
 
 ```docker exec -it <db_container_id> mongo aclu --eval "db.features.drop()"```
 
+# Tests
+
+```PYTHONPATH=. ptw --poll --clear --afterrun 'true && echo "Last test run at: " `date`' .```
 
 # TODO
 
 Here's a list of things we need to do.
 
- - Verify that the schema is correct. It was a first pass, so probably needs to
-   change.
+ - Verify that the schema is correct. It was a first pass, so probably needs to change.
  - Fix this README as I used it as a notepad. :D
  - Add Postman endpoints
  - Need to bring in more feature properties as possible first class properties
    wrt the data schmea
+ - Need to setup a fixed virtualenv for this in the Vagrant box along with on
+   the dev machine. Right now, that pip install call will pollute your
+   environment if you don't have a virtualenv setup - so sorry if that's
+   unexpected. Will update with a warning atop.
+ - Need to decide if we want to run this via python3 or python2. Currently
+   running all in python2
+
